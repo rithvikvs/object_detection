@@ -274,7 +274,7 @@ class ObjectDetection:
         self.datasetName = self.dlg.lineEditDatasetName.text()
         plugin_directory = sys.path[0]
         self.dataset_path = os.path.join(plugin_directory, "plugins/object_detection/workspace/data", self.datasetName)
-        self.clippings_path = os.path.join(plugin_directory, "plugins/object_detection/workspace/data", self.datasetName, "images")  
+        self.clippings_path = os.path.join(plugin_directory, "plugins/object_detection/workspace/data", self.datasetName, "images")
              
         if self.datasetName == "":
             self.dlg.error_dialog = QErrorMessage()
@@ -320,8 +320,7 @@ class ObjectDetection:
         win.show()
 
     # Dialog to annotate images
-    def open_annotation_dialog(self):
-        
+    #def open_annotation_dialog(self):
 
     def display_slider_value(self):
         self.trainSplitPercentage = self.dlg.horizontalSliderSplit.value()
@@ -370,7 +369,7 @@ class ObjectDetection:
            
         self.dlg.toolButtonData.clicked.connect(self.select_training_image)
         self.dlg.pushButtonCreateClippings.clicked.connect(self.clip_image)
-        self.dlg.pushButtonAnnotate.clicked.connect(self.open_annotation_dialog)
+        #self.dlg.pushButtonAnnotate.clicked.connect(self.open_annotation_dialog)
         self.dlg.pushButtonPreparation.clicked.connect(self.prepare_dataset_for_training)
         
         self.dlg.horizontalSliderSplit.valueChanged.connect(self.display_slider_value)
