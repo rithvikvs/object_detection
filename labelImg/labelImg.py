@@ -30,7 +30,7 @@ except ImportError:
     from PyQt4.QtCore import *
 
 from object_detection.labelImg.libs.combobox import ComboBox
-#from object_detection.labelImg.libs.resources import *
+from object_detection.labelImg.libs.resources import *
 from object_detection.labelImg.libs.constants import *
 from object_detection.labelImg.libs.utils import *
 from object_detection.labelImg.libs.settings import Settings

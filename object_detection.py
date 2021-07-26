@@ -45,6 +45,8 @@ from .labelImg.labelImg import *
 # Import preprocessing
 from .preprocess import *
 
+# Import annotation dialog
+from .dialogsAndWindows.annotation_dialog import AnnotationDialog
 
 class ObjectDetection:
     """QGIS Plugin Implementation."""
@@ -318,14 +320,33 @@ class ObjectDetection:
         
 
     # function to open labelImg
-    def open_label_img(self):
-        win = MainWindow(self.clippings_path,
-                     "",
-                     self.clippings_path)
-        win.show()
+    def open_label_img(self, i):
+        if i==1:
+            win = MainWindow(self.trainImagesPath, "", self.trainImagesPath)
+            win.show()
+        else:
+            if os.path.exists(os.path.join(self.trainImagesPath, "classes.txt")):
+                win = MainWindow(self.testImagesPath, os.path.join(self.trainImagesPath, "classes.txt"), self.testImagesPath)
+                win.show()
+            else:
+                self.dlg.error_dialog = QErrorMessage()
+                self.dlg.error_dialog.showMessage('There is no "classes.txt" file in train folder. Please annotate/label the training images first.')
 
     # Dialog to annotate images
-    #def open_annotation_dialog(self):
+    def open_annotation_dialog(self):
+        self.annDlg = AnnotationDialog()
+        self.annDlg.setWindowFlags(Qt.WindowShadeButtonHint)
+        
+        self.annDlg.labelTest.setEnabled(False)
+        self.annDlg.completeTest.setEnabled(False)
+        self.annDlg.show()
+        
+        self.annDlg.labelTrain.clicked.connect(lambda: self.open_label_img(1))
+        self.annDlg.completeTrain.clicked.connect(lambda: self.annDlg.labelTest.setEnabled(True))
+        self.annDlg.completeTrain.clicked.connect(lambda: self.annDlg.completeTest.setEnabled(True))
+        
+        self.annDlg.labelTest.clicked.connect(lambda: self.open_label_img(2))
+        self.annDlg.completeTest.clicked.connect(lambda: self.annDlg.close())
 
     def display_slider_value(self):
         self.trainSplitPercentage = self.dlg.horizontalSliderSplit.value()
@@ -363,7 +384,7 @@ class ObjectDetection:
             self.dlg.lineEditDatasetName.setText("") 
             self.dlg.pushButtonCreateClippings.setText("Create Clippings")
             self.dlg.pushButtonCreateClippings.setEnabled(True)
-            self.dlg.pushButtonAnnotate.setEnabled(False)
+            #self.dlg.pushButtonAnnotate.setEnabled(False)
             self.dlg.pushButtonPreparation.setEnabled(False)
             progressBarClip.setValue(0)
             self.dlg.horizontalSliderSplit.setValue(100)
@@ -374,7 +395,7 @@ class ObjectDetection:
            
         self.dlg.toolButtonData.clicked.connect(self.select_training_image)
         self.dlg.pushButtonCreateClippings.clicked.connect(self.clip_image)
-        #self.dlg.pushButtonAnnotate.clicked.connect(self.open_annotation_dialog)
+        self.dlg.pushButtonAnnotate.clicked.connect(self.open_annotation_dialog)
         self.dlg.pushButtonPreparation.clicked.connect(self.prepare_dataset_for_training)
         
         self.dlg.horizontalSliderSplit.valueChanged.connect(self.display_slider_value)
