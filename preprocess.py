@@ -88,7 +88,7 @@ def create_jpg_clippings(filename, output_path, progressBarClip):
     
     # Open jpg file
     if os.name == "nt":
-        img = Image.open(os.path.normpath(os.path.join(output_path, "jpg_conversion").replace('\\','\'')))
+        img = Image.open(os.path.normpath(os.path.join(output_path, "jpg_conversion").replace("\\\\","\\")))
     else:
         img = Image.open(os.path.join(output_path, "jpg_conversion.jpg"))
 
