@@ -273,13 +273,13 @@ class ObjectDetection:
         self.dlg.statusLabel.setText("Perfoming checks...")
         self.datasetName = self.dlg.lineEditDatasetName.text()
         plugin_directory = sys.path[0]
-        
         self.dataset_path = os.path.join(plugin_directory, "plugins/object_detection/workspace/data", self.datasetName)
         self.clippings_path = os.path.join(plugin_directory, "plugins/object_detection/workspace/data", self.datasetName, "images")
         
         if os.name == "nt":
+            plugin_directory = os.path.dirname(__file__)
             self.dataset_path = os.path.join(plugin_directory, "workspace/data", self.datasetName)
-            self.clippings_path = os.path.join(plugin_directory, "workspace/data", self.datasetName, "images") 
+            self.clippings_path = os.path.join(plugin_directory, "workspace/data", self.datasetName, "images")
              
         if self.datasetName == "":
             self.dlg.error_dialog = QErrorMessage()

@@ -84,10 +84,14 @@ def create_jpg_clippings(filename, output_path, progressBarClip):
     
     #xlen_in_pixels, ylen_in_pixels = dataset.RasterXSize, dataset.RasterYSize
     
-    gdal.Translate(os.path.join(output_path,"jpg_conversion.jpg"), dataset, format='jpeg')
+    gdal.Translate(os.path.join(output_path, "jpg_conversion.jpg"), dataset, format='jpeg')
     
     # Open jpg file
-    img = Image.open(os.path.join(output_path, "jpg_conversion.jpg"))
+    if os.name == "nt":
+        img = Image.open(os.path.normpath(os.path.join(output_path, "jpg_conversion").replace('\\','\'')))
+    else:
+        img = Image.open(os.path.join(output_path, "jpg_conversion.jpg"))
+
     xlen_in_pixels, ylen_in_pixels = img.size
     
     # set xmin and ymin values for jpg
@@ -139,4 +143,4 @@ def create_jpg_clippings(filename, output_path, progressBarClip):
     
 
                 
-            
+
