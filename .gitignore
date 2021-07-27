@@ -1,2 +1,6 @@
+# Unnecesary python files.
 *.pyc
+__pycache__
+
+# Workspace directory created by the code.
 workspace/
