@@ -372,7 +372,7 @@ class ObjectDetection:
         self.delete_unnecessary_jpg(self.trainImagesPath)
         # Delete testing images with no corresponding label files
         self.delete_unnecessary_jpg(self.testImagesPath)
-        
+
         dest = self.dataset_path
         name = self.datasetName
     
