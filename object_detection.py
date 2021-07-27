@@ -21,30 +21,26 @@
  *                                                                         *
  ***************************************************************************/
 """
+
+import glob
+import os.path
+import pathlib
+import shutil
+
+import numpy as np
+
 from qgis.PyQt.QtCore import *
 from qgis.PyQt.QtGui import *
 from qgis.PyQt.QtWidgets import *
-
-# Import threading
-from threading import *
 
 # Initialize Qt resources from file resources.py
 from .resources import *
 # Import the code for the dialog
 from .object_detection_dialog import ObjectDetectionDialog
-import os.path
-
-import pathlib
-
-import shutil
-import numpy as np
-
 # Import labelImg
 from .labelImg.labelImg import *
-
 # Import preprocessing
 from .preprocess import *
-
 # Import annotation dialog
 from .dialogsAndWindows.annotation_dialog import AnnotationDialog
 
@@ -364,10 +360,36 @@ class ObjectDetection:
         shutil.copyfile(src, destNames)
         
         # Create training.txt file
+        destTrain = str(os.path.join(dest, "train.txt"))
+        
+        images_list = glob.glob(str(os.path.join(self.trainImagesPath, "*.jpg")))
+        file = open(destTrain, "w") 
+        file.write("\n".join(images_list)) 
+        file.close()
         
         # Create testing.txt file
+        destTest = str(os.path.join(dest, "test.txt"))
+        
+        images_list = glob.glob(str(os.path.join(self.testImagesPath, "*.jpg")))
+        file = open(destTest, "w") 
+        file.write("\n".join(images_list)) 
+        file.close()
         
         # Create dataset_name.data file
+        destData = str(os.path.join(dest, name + ".data"))
+        
+        with open(destNames) as f:
+            for i, l in enumerate(f):
+                pass
+        numberOfClasses = i+1
+        
+        file = open(destData, "w")
+        L = ["classes= "+str(numberOfClasses)+"\n", "train  = "+destTrain+"\n" ,"valid  = "+destTest+"\n", "names = "+destNames+"\n", "backup = "]
+        file.writelines(L)
+        file.close()
+        
+        self.dlg.pushButtonPreparation.setText("Done")
+        self.dlg.pushButtonPreparation.setEnabled(False)
 
     def run(self):
         """Run method that performs all the real work"""
