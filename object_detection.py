@@ -287,7 +287,7 @@ class ObjectDetection:
             self.dlg.error_dialog = QErrorMessage()
             self.dlg.error_dialog.showMessage('Please select an input file.')
             return
-        elif os.path.exists(self.clippings_path): 
+        elif os.path.exists(self.dataset_path): 
             self.dlg.error_dialog = QErrorMessage()
             self.dlg.error_dialog.showMessage('The detector already exists. Please provide a new detector name.')
             self.dlg.lineEditDatasetName.setText("") 
@@ -298,7 +298,7 @@ class ObjectDetection:
         self.dlg.pushButtonCreateClippings.setEnabled(False)
         
         self.dlg.statusLabel.setText("Clipping the image...")
-        geoTransform, projection = create_jpg_clippings(self.filename, self.clippings_path, self.dlg.progressBarClip)
+        self.xdiv, self.ydiv, geoTransform, projection = create_jpg_clippings(self.filename, self.clippings_path, self.dlg.progressBarClip)
         
         # create training and testing sets
         self.dlg.statusLabel.setText("Splitting the images into testing and training sets...")
@@ -352,17 +352,18 @@ class ObjectDetection:
     # function to delete images with no corresponding label files
     def delete_unnecessary_jpg(self, deletePath):
         try:
-            for files in os.walk(deletePath):
-                for file in files:
-                    for i in range(self.xdiv):
-                        for j in range(self.ydiv):
-                            if (("clipping"+str(i)+"_"+str(j)+".jpg") and (
-                                    "clipping"+str(i)+"_"+str(j)+".txt")) in files:
-                            # print("found "+"clipping"+str(i)+"_"+str(j)+".jpg"+" and " + "clipping"+str(i)+"_"+str(j)+".txt")
-                            else:
-                                del_file = "clipping"+str(i)+"_"+str(j)+".jpg"
+            files = os.listdir(deletePath)
+            for file in files:
+                for i in range(self.xdiv):
+                    for j in range(self.ydiv):
+                        if ("clipping"+str(i)+"_"+str(j)+".jpg") in files:
+                            if not ("clipping"+str(i)+"_"+str(j)+".txt") in files:
+                                del_file = os.path.join(deletePath, "clipping"+str(i)+"_"+str(j)+".jpg")
                                 os.remove(del_file)
-                                # print("deleted files " + "clipping"+str(i)+"_"+str(j)+".jpg")
+                            else:
+                                continue
+                        else:
+                            continue
         except FileNotFoundError:
             pass
 
@@ -372,6 +373,11 @@ class ObjectDetection:
         self.delete_unnecessary_jpg(self.trainImagesPath)
         # Delete testing images with no corresponding label files
         self.delete_unnecessary_jpg(self.testImagesPath)
+        
+        # Moving the original jpg file and xml file to OriginalInJPG folder
+        pathlib.Path(os.path.join(self.dataset_path, "OriginalInJPG")).mkdir(0o755, parents=True, exist_ok=True)
+        shutil.move(os.path.join(self.trainImagesPath, "jpg_conversion.jpg"), os.path.join(self.dataset_path, "OriginalInJPG"))
+        shutil.move(os.path.join(self.trainImagesPath, "jpg_conversion.jpg.aux.xml"), os.path.join(self.dataset_path, "OriginalInJPG"))
         
         dest = self.dataset_path
         name = self.datasetName

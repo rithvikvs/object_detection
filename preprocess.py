@@ -130,7 +130,7 @@ def create_jpg_clippings(filename, output_path, progressBarClip):
             
     dataset = None
     
-    return geoTransform, projection
+    return xdiv, ydiv, geoTransform, projection
     
     
     
