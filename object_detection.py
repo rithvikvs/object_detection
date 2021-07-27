@@ -349,8 +349,30 @@ class ObjectDetection:
         self.testSplitPercentage = 100 - self.trainSplitPercentage
         self.dlg.trainTestLabel.setText("Train = " + str(self.trainSplitPercentage) + "% | Test = " + str(self.testSplitPercentage) + "%")
 
+    # function to delete images with no corresponding label files
+    def delete_unnecessary_jpg(self, deletePath):
+        try:
+            for files in os.walk(deletePath):
+                for file in files:
+                    for i in range(self.xdiv):
+                        for j in range(self.ydiv):
+                            if (("clipping"+str(i)+"_"+str(j)+".jpg") and (
+                                    "clipping"+str(i)+"_"+str(j)+".txt")) in files:
+                            # print("found "+"clipping"+str(i)+"_"+str(j)+".jpg"+" and " + "clipping"+str(i)+"_"+str(j)+".txt")
+                            else:
+                                del_file = "clipping"+str(i)+"_"+str(j)+".jpg"
+                                os.remove(del_file)
+                                # print("deleted files " + "clipping"+str(i)+"_"+str(j)+".jpg")
+        except FileNotFoundError:
+            pass
+
     # Create all the necessary files for training.
     def prepare_dataset_for_training(self):
+        # Delete training images with no corresponding label files
+        self.delete_unnecessary_jpg(self.trainImagesPath)
+        # Delete testing images with no corresponding label files
+        self.delete_unnecessary_jpg(self.testImagesPath)
+        
         dest = self.dataset_path
         name = self.datasetName
     
