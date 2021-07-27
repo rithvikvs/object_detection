@@ -227,12 +227,12 @@
             <x>180</x>
             <y>190</y>
             <width>551</width>
-            <height>17</height>
+            <height>21</height>
            </rect>
           </property>
           <property name="font">
            <font>
-            <pointsize>7</pointsize>
+            <pointsize>9</pointsize>
            </font>
           </property>
           <property name="text">
