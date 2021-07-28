@@ -324,12 +324,17 @@ class ObjectDetection:
             win = MainWindow(self.trainImagesPath, "", self.trainImagesPath)
             win.show()
         else:
-            if os.path.exists(os.path.join(self.trainImagesPath, "classes.txt")):
-                win = MainWindow(self.testImagesPath, os.path.join(self.trainImagesPath, "classes.txt"), self.testImagesPath)
-                win.show()
-            else:
-                self.dlg.error_dialog = QErrorMessage()
-                self.dlg.error_dialog.showMessage('There is no "classes.txt" file in train folder. Please annotate/label the training images first.')
+            win = MainWindow(self.testImagesPath, os.path.join(self.trainImagesPath, "classes.txt"), self.testImagesPath)
+            win.show()
+
+    # function to enable test labelling
+    def enable_test_labelling(self):
+        if os.path.exists(os.path.join(self.trainImagesPath, "classes.txt")):
+            self.annDlg.completeTrain.clicked.connect(lambda: self.annDlg.labelTest.setEnabled(True))
+            self.annDlg.completeTrain.clicked.connect(lambda: self.annDlg.completeTest.setEnabled(True))
+        else:
+            self.dlg.error_dialog = QErrorMessage()
+            self.dlg.error_dialog.showMessage('There is no "classes.txt" file in train folder. Please annotate/label the training images first.')
 
     # Dialog to annotate images
     def open_annotation_dialog(self):
@@ -341,8 +346,7 @@ class ObjectDetection:
         self.annDlg.show()
         
         self.annDlg.labelTrain.clicked.connect(lambda: self.open_label_img(1))
-        self.annDlg.completeTrain.clicked.connect(lambda: self.annDlg.labelTest.setEnabled(True))
-        self.annDlg.completeTrain.clicked.connect(lambda: self.annDlg.completeTest.setEnabled(True))
+        self.annDlg.completeTrain.clicked.connect(lambda: self.enable_test_labelling())
         
         self.annDlg.labelTest.clicked.connect(lambda: self.open_label_img(2))
         self.annDlg.completeTest.clicked.connect(lambda: self.annDlg.close())
