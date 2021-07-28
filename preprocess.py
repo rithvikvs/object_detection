@@ -87,10 +87,12 @@ def create_jpg_clippings(filename, output_path, progressBarClip):
     gdal.Translate(os.path.join(output_path, "jpg_conversion.jpg"), dataset, format='jpeg')
     
     # Open jpg file
-    if os.name == "nt":
-        img = Image.open(os.path.normpath(os.path.join(output_path, "jpg_conversion").replace("\\\\","\\")))
+    '''if os.name == "nt":
+        img = Image.open(os.path.join(output_path, "jpg_conversion"))
     else:
-        img = Image.open(os.path.join(output_path, "jpg_conversion.jpg"))
+        img = Image.open(os.path.join(output_path, "jpg_conversion.jpg"))'''
+    img = Image.open(os.path.join(output_path, "jpg_conversion.jpg"))
+
 
     xlen_in_pixels, ylen_in_pixels = img.size
     

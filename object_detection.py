@@ -223,7 +223,7 @@ class ObjectDetection:
             pixmap_resized = pixmap.scaled(100, 100, QtCore.Qt.KeepAspectRatio)
             label = QLabel(pixmap=pixmap_resized)
             self.dlg.gridLayout.addWidget(label, self.i, self.j)
-            self.j = (self.j+1) % 11
+            self.j = (self.j+1) % 10
             if(self.j==0):
                 self.i = self.i+1
 
@@ -270,14 +270,14 @@ class ObjectDetection:
     
         self.dlg.statusLabel.setText("Perfoming checks...")
         self.datasetName = self.dlg.lineEditDatasetName.text()
-        plugin_directory = sys.path[0]
-        self.dataset_path = os.path.join(plugin_directory, "plugins/object_detection/workspace/data", self.datasetName)
-        self.clippings_path = os.path.join(plugin_directory, "plugins/object_detection/workspace/data", self.datasetName, "images")
+        plugin_directory = self.plugin_dir
+        self.dataset_path = os.path.join(plugin_directory, "workspace", "data", self.datasetName)
+        self.clippings_path = os.path.join(self.dataset_path, "images")
         
-        if os.name == "nt":
+        '''if os.name == "nt":
             plugin_directory = os.path.dirname(__file__)
             self.dataset_path = os.path.join(plugin_directory, "workspace/data", self.datasetName)
-            self.clippings_path = os.path.join(plugin_directory, "workspace/data", self.datasetName, "images")
+            self.clippings_path = os.path.join(plugin_directory, "workspace/data", self.datasetName, "images")'''
              
         if self.datasetName == "":
             self.dlg.error_dialog = QErrorMessage()
@@ -300,6 +300,9 @@ class ObjectDetection:
         self.dlg.statusLabel.setText("Clipping the image...")
         self.xdiv, self.ydiv, geoTransform, projection = create_jpg_clippings(self.filename, self.clippings_path, self.dlg.progressBarClip)
         
+        # Moving the original jpg file and xml file to OriginalInJPG folder
+        self.move_og_into_another_directory()
+                
         # create training and testing sets
         self.dlg.statusLabel.setText("Splitting the images into testing and training sets...")
         self.createTrainTestSplit()
@@ -367,17 +370,18 @@ class ObjectDetection:
         except FileNotFoundError:
             pass
 
+    def move_og_into_another_directory(self):
+        # Moving the original jpg file and xml file to OriginalInJPG folder
+        pathlib.Path(os.path.join(self.dataset_path, "OriginalInJPG")).mkdir(0o755, parents=True, exist_ok=True)
+        shutil.move(os.path.join(self.clippings_path, "jpg_conversion.jpg"), os.path.join(self.dataset_path, "OriginalInJPG"))
+        shutil.move(os.path.join(self.clippings_path, "jpg_conversion.jpg.aux.xml"), os.path.join(self.dataset_path, "OriginalInJPG"))
+
     # Create all the necessary files for training.
     def prepare_dataset_for_training(self):
         # Delete training images with no corresponding label files
         self.delete_unnecessary_jpg(self.trainImagesPath)
         # Delete testing images with no corresponding label files
         self.delete_unnecessary_jpg(self.testImagesPath)
-
-        # Moving the original jpg file and xml file to OriginalInJPG folder
-        pathlib.Path(os.path.join(self.dataset_path, "OriginalInJPG")).mkdir(0o755, parents=True, exist_ok=True)
-        shutil.move(os.path.join(self.trainImagesPath, "jpg_conversion.jpg"), os.path.join(self.dataset_path, "OriginalInJPG"))
-        shutil.move(os.path.join(self.trainImagesPath, "jpg_conversion.jpg.aux.xml"), os.path.join(self.dataset_path, "OriginalInJPG"))
         
         dest = self.dataset_path
         name = self.datasetName
