@@ -287,7 +287,7 @@ class ObjectDetection:
             self.dlg.error_dialog = QErrorMessage()
             self.dlg.error_dialog.showMessage('Please select an input file.')
             return
-        elif os.path.exists(self.clippings_path): 
+        elif os.path.exists(self.dataset_path): 
             self.dlg.error_dialog = QErrorMessage()
             self.dlg.error_dialog.showMessage('The detector already exists. Please provide a new detector name.')
             self.dlg.lineEditDatasetName.setText("") 
@@ -298,7 +298,7 @@ class ObjectDetection:
         self.dlg.pushButtonCreateClippings.setEnabled(False)
         
         self.dlg.statusLabel.setText("Clipping the image...")
-        geoTransform, projection = create_jpg_clippings(self.filename, self.clippings_path, self.dlg.progressBarClip)
+        self.xdiv, self.ydiv, geoTransform, projection = create_jpg_clippings(self.filename, self.clippings_path, self.dlg.progressBarClip)
         
         # create training and testing sets
         self.dlg.statusLabel.setText("Splitting the images into testing and training sets...")
