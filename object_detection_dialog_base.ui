@@ -34,7 +34,7 @@
         <enum>QTabWidget::Rounded</enum>
        </property>
        <property name="currentIndex">
-        <number>0</number>
+        <number>2</number>
        </property>
        <widget class="QWidget" name="trainTab">
         <attribute name="title">
@@ -82,7 +82,7 @@
            <x>30</x>
            <y>120</y>
            <width>1011</width>
-           <height>221</height>
+           <height>161</height>
           </rect>
          </property>
          <property name="title">
@@ -118,7 +118,7 @@
           <property name="geometry">
            <rect>
             <x>760</x>
-            <y>155</y>
+            <y>120</y>
             <width>121</width>
             <height>30</height>
            </rect>
@@ -144,7 +144,7 @@
           <property name="geometry">
            <rect>
             <x>180</x>
-            <y>160</y>
+            <y>120</y>
             <width>551</width>
             <height>23</height>
            </rect>
@@ -185,29 +185,6 @@
            <enum>Qt::Horizontal</enum>
           </property>
          </widget>
-         <widget class="QLabel" name="label_6">
-          <property name="geometry">
-           <rect>
-            <x>20</x>
-            <y>120</y>
-            <width>151</width>
-            <height>21</height>
-           </rect>
-          </property>
-          <property name="text">
-           <string>Overlap percentage:</string>
-          </property>
-         </widget>
-         <widget class="QComboBox" name="comboBox">
-          <property name="geometry">
-           <rect>
-            <x>180</x>
-            <y>120</y>
-            <width>351</width>
-            <height>23</height>
-           </rect>
-          </property>
-         </widget>
          <widget class="QLabel" name="trainTestLabel">
           <property name="geometry">
            <rect>
@@ -244,9 +221,9 @@
          <property name="geometry">
           <rect>
            <x>30</x>
-           <y>350</y>
+           <y>290</y>
            <width>1011</width>
-           <height>461</height>
+           <height>521</height>
           </rect>
          </property>
          <property name="title">
@@ -269,8 +246,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>985</width>
-               <height>418</height>
+               <width>98</width>
+               <height>28</height>
               </rect>
              </property>
              <layout class="QGridLayout" name="gridLayout">
@@ -329,6 +306,233 @@
         <attribute name="title">
          <string>Train Detector</string>
         </attribute>
+        <widget class="QGroupBox" name="groupBoxDataset_2">
+         <property name="geometry">
+          <rect>
+           <x>30</x>
+           <y>10</y>
+           <width>1011</width>
+           <height>251</height>
+          </rect>
+         </property>
+         <property name="title">
+          <string>New Detector</string>
+         </property>
+         <widget class="QLabel" name="labelDatasetName_2">
+          <property name="geometry">
+           <rect>
+            <x>20</x>
+            <y>40</y>
+            <width>111</width>
+            <height>21</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Detector name: </string>
+          </property>
+         </widget>
+         <widget class="QLineEdit" name="lineEditDetectorName">
+          <property name="geometry">
+           <rect>
+            <x>200</x>
+            <y>40</y>
+            <width>341</width>
+            <height>23</height>
+           </rect>
+          </property>
+         </widget>
+         <widget class="QLineEdit" name="lineEditModelConfig">
+          <property name="geometry">
+           <rect>
+            <x>200</x>
+            <y>80</y>
+            <width>551</width>
+            <height>23</height>
+           </rect>
+          </property>
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_3">
+          <property name="geometry">
+           <rect>
+            <x>20</x>
+            <y>80</y>
+            <width>171</width>
+            <height>21</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Select model configuration:</string>
+          </property>
+         </widget>
+         <widget class="QToolButton" name="toolButtonModelConfig">
+          <property name="geometry">
+           <rect>
+            <x>770</x>
+            <y>80</y>
+            <width>25</width>
+            <height>24</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>...</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_7">
+          <property name="geometry">
+           <rect>
+            <x>20</x>
+            <y>120</y>
+            <width>171</width>
+            <height>21</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Select base weights:</string>
+          </property>
+         </widget>
+         <widget class="QToolButton" name="toolButtonBaseWeights">
+          <property name="geometry">
+           <rect>
+            <x>770</x>
+            <y>120</y>
+            <width>25</width>
+            <height>24</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>...</string>
+          </property>
+         </widget>
+         <widget class="QLineEdit" name="lineEditBaseWeights">
+          <property name="geometry">
+           <rect>
+            <x>200</x>
+            <y>120</y>
+            <width>551</width>
+            <height>23</height>
+           </rect>
+          </property>
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+         </widget>
+         <widget class="QLineEdit" name="lineEditDataset">
+          <property name="geometry">
+           <rect>
+            <x>200</x>
+            <y>160</y>
+            <width>551</width>
+            <height>23</height>
+           </rect>
+          </property>
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+         </widget>
+         <widget class="QToolButton" name="toolButtonDataset">
+          <property name="geometry">
+           <rect>
+            <x>770</x>
+            <y>160</y>
+            <width>25</width>
+            <height>24</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>...</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_8">
+          <property name="geometry">
+           <rect>
+            <x>20</x>
+            <y>160</y>
+            <width>171</width>
+            <height>21</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Select dataset:</string>
+          </property>
+         </widget>
+         <widget class="QPushButton" name="pushButtonTrain">
+          <property name="geometry">
+           <rect>
+            <x>770</x>
+            <y>200</y>
+            <width>91</width>
+            <height>30</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Train</string>
+          </property>
+         </widget>
+        </widget>
+        <widget class="QGroupBox" name="groupBox_2">
+         <property name="geometry">
+          <rect>
+           <x>30</x>
+           <y>280</y>
+           <width>1011</width>
+           <height>571</height>
+          </rect>
+         </property>
+         <property name="title">
+          <string>Status</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_6">
+          <item row="0" column="0">
+           <widget class="QScrollArea" name="scrollArea_2">
+            <property name="autoFillBackground">
+             <bool>false</bool>
+            </property>
+            <property name="sizeAdjustPolicy">
+             <enum>QAbstractScrollArea::AdjustToContents</enum>
+            </property>
+            <property name="widgetResizable">
+             <bool>true</bool>
+            </property>
+            <widget class="QWidget" name="scrollAreaWidgetContents_2">
+             <property name="geometry">
+              <rect>
+               <x>0</x>
+               <y>0</y>
+               <width>98</width>
+               <height>90</height>
+              </rect>
+             </property>
+             <layout class="QGridLayout" name="gridLayout_2">
+              <property name="sizeConstraint">
+               <enum>QLayout::SetFixedSize</enum>
+              </property>
+              <property name="leftMargin">
+               <number>10</number>
+              </property>
+              <property name="topMargin">
+               <number>10</number>
+              </property>
+              <property name="rightMargin">
+               <number>10</number>
+              </property>
+              <property name="bottomMargin">
+               <number>10</number>
+              </property>
+              <property name="spacing">
+               <number>5</number>
+              </property>
+              <item row="0" column="0">
+               <widget class="QTextBrowser" name="textBrowser"/>
+              </item>
+             </layout>
+            </widget>
+           </widget>
+          </item>
+         </layout>
+        </widget>
        </widget>
        <widget class="QWidget" name="tab_3">
         <property name="layoutDirection">
@@ -343,7 +547,7 @@
            <x>30</x>
            <y>10</y>
            <width>1015</width>
-           <height>121</height>
+           <height>201</height>
           </rect>
          </property>
          <property name="title">
@@ -367,21 +571,21 @@
            <string>Select detector:</string>
           </property>
          </widget>
-         <widget class="QLineEdit" name="lineEdit_4">
+         <widget class="QLineEdit" name="lineEditDetectionD">
           <property name="geometry">
            <rect>
-            <x>90</x>
-            <y>70</y>
+            <x>160</x>
+            <y>40</y>
             <width>451</width>
             <height>22</height>
            </rect>
           </property>
          </widget>
-         <widget class="QToolButton" name="toolButton_3">
+         <widget class="QToolButton" name="toolButtonDetectionD">
           <property name="geometry">
            <rect>
-            <x>550</x>
-            <y>70</y>
+            <x>630</x>
+            <y>40</y>
             <width>25</width>
             <height>24</height>
            </rect>
@@ -390,12 +594,125 @@
            <string>...</string>
           </property>
          </widget>
+         <widget class="QLabel" name="label_15">
+          <property name="geometry">
+           <rect>
+            <x>20</x>
+            <y>80</y>
+            <width>121</width>
+            <height>21</height>
+           </rect>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>9</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>Select weights:</string>
+          </property>
+         </widget>
+         <widget class="QToolButton" name="toolButtonDetectionW">
+          <property name="geometry">
+           <rect>
+            <x>630</x>
+            <y>80</y>
+            <width>25</width>
+            <height>24</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>...</string>
+          </property>
+         </widget>
+         <widget class="QLineEdit" name="lineEditDetectionW">
+          <property name="geometry">
+           <rect>
+            <x>160</x>
+            <y>80</y>
+            <width>451</width>
+            <height>22</height>
+           </rect>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_16">
+          <property name="geometry">
+           <rect>
+            <x>20</x>
+            <y>120</y>
+            <width>121</width>
+            <height>21</height>
+           </rect>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>9</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>cfgfile:</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_18">
+          <property name="geometry">
+           <rect>
+            <x>20</x>
+            <y>160</y>
+            <width>121</width>
+            <height>21</height>
+           </rect>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>9</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>datacfg:</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="cfgFilePath">
+          <property name="geometry">
+           <rect>
+            <x>160</x>
+            <y>120</y>
+            <width>831</width>
+            <height>21</height>
+           </rect>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>9</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+         <widget class="QLabel" name="datacfgPath">
+          <property name="geometry">
+           <rect>
+            <x>160</x>
+            <y>160</y>
+            <width>831</width>
+            <height>21</height>
+           </rect>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>9</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
         </widget>
-        <widget class="QPushButton" name="pushButton_3">
+        <widget class="QPushButton" name="pushButtonDetect">
          <property name="geometry">
           <rect>
            <x>950</x>
-           <y>310</y>
+           <y>330</y>
            <width>93</width>
            <height>28</height>
           </rect>
@@ -408,9 +725,9 @@
          <property name="geometry">
           <rect>
            <x>30</x>
-           <y>160</y>
+           <y>230</y>
            <width>1015</width>
-           <height>121</height>
+           <height>81</height>
           </rect>
          </property>
          <property name="title">
@@ -434,21 +751,21 @@
            <string>Select image:</string>
           </property>
          </widget>
-         <widget class="QLineEdit" name="lineEdit_5">
+         <widget class="QLineEdit" name="lineEditDetectionI">
           <property name="geometry">
            <rect>
-            <x>90</x>
-            <y>70</y>
+            <x>160</x>
+            <y>40</y>
             <width>451</width>
             <height>22</height>
            </rect>
           </property>
          </widget>
-         <widget class="QToolButton" name="toolButton_4">
+         <widget class="QToolButton" name="toolButtonDetectionI">
           <property name="geometry">
            <rect>
-            <x>550</x>
-            <y>70</y>
+            <x>630</x>
+            <y>40</y>
             <width>25</width>
             <height>24</height>
            </rect>

@@ -28,6 +28,7 @@ import pathlib
 import shutil
 
 import numpy as np
+from wurlitzer import pipes
 
 from qgis.PyQt.QtCore import *
 from qgis.PyQt.QtGui import *
@@ -43,6 +44,8 @@ from .labelImg.labelImg import *
 from .preprocess import *
 # Import annotation dialog
 from .dialogsAndWindows.annotation_dialog import AnnotationDialog
+# Import darknetFunc
+from .darknet import darknetFunc
 
 class ObjectDetection:
     """QGIS Plugin Implementation."""
@@ -194,6 +197,9 @@ class ObjectDetection:
                 action)
             self.iface.removeToolBarIcon(action)
 
+################################################################################################
+# Dataset Creation Tab
+
     # function to show the clippings in the scroll area
     def show_clippings(self):
         url = self.trainImagesPath
@@ -289,7 +295,7 @@ class ObjectDetection:
             return
         elif os.path.exists(self.dataset_path): 
             self.dlg.error_dialog = QErrorMessage()
-            self.dlg.error_dialog.showMessage('The detector already exists. Please provide a new detector name.')
+            self.dlg.error_dialog.showMessage('The dataset already exists. Please provide a new dataset name.')
             self.dlg.lineEditDatasetName.setText("") 
             return 
             
@@ -427,6 +433,178 @@ class ObjectDetection:
         self.dlg.pushButtonPreparation.setText("Done")
         self.dlg.pushButtonPreparation.setEnabled(False)
 
+# Dataset Creation Tab
+################################################################################################
+# Training Tab
+        
+    def select_model_config(self):
+        filename, _ = QFileDialog.getOpenFileName(self.dlg, "Select a model configuration file.", str(os.path.join(self.plugin_dir, "workspace", "cfg")), '*.cfg')
+        self.modelConfig = filename
+        self.dlg.lineEditModelConfig.setText(filename)
+        
+    def select_base_weights(self):
+        filename, _ = QFileDialog.getOpenFileName(self.dlg, "Select base weights.", str(self.plugin_dir), '*weights')
+        self.baseWeights = filename
+        self.dlg.lineEditBaseWeights.setText(filename)
+        
+    def select_dataset_directory(self):
+        if not os.path.exists(os.path.join(self.plugin_dir, "workspace", "data")):
+            self.dlg.error_dialog = QErrorMessage()
+            self.dlg.error_dialog.showMessage('Please create a dataset first.')
+            return
+        
+        filename = QFileDialog.getExistingDirectory(self.dlg, "Select a dataset directory.", str(os.path.join(self.plugin_dir, "workspace", "data")))
+        self.datasetDirectory = filename
+        self.dlg.lineEditDataset.setText(filename)
+    
+    def prepare_data_file(self):
+        if self.datasetDirectory:
+            dsDirectory = self.datasetDirectory
+            self.dsDataFilePath = os.path.join(dsDirectory, str(os.path.basename(dsDirectory))+".data")
+            
+            with open(self.dsDataFilePath, 'r') as file:
+                # read a list of lines into data
+                data = file.readlines()
+
+            data[4] = "backup = " + str(self.weights_folder) + "\n"
+
+            # and write everything back
+            with open(self.dsDataFilePath, 'w') as file:
+                file.writelines(data)
+    
+    def prepare_config_file(self):
+        if str(os.path.basename(self.modelConfig)) == "yolov3.cfg":
+            dsDirectory = self.datasetDirectory
+            destNames = str(os.path.join(dsDirectory, str(os.path.basename(dsDirectory))+".names"))
+        
+            with open(destNames) as f:
+                for i, l in enumerate(f):
+                    pass
+            numberOfClasses = i+1
+            
+            self.newModelConfigPath = os.path.join(self.detector_path, self.detectorName+".cfg")
+            shutil.copy(self.modelConfig, self.newModelConfigPath)
+            
+            with open(self.newModelConfigPath, 'r') as file:
+                # read a list of lines into data
+                data = file.readlines()
+        
+            max_batches = numberOfClasses * 2000
+            steps1 = int(max_batches * 0.8)
+            steps2 = int(max_batches * 0.9)
+            filters = (numberOfClasses + 5) * 3
+        
+            data[19] = "max_batches = " + str(max_batches) + "\n"
+            data[21] = "steps=" + str(steps1) + "," + str(steps2) + "\n"
+            data[609] = "classes=" + str(numberOfClasses) + "\n"
+            data[695] = "classes=" + str(numberOfClasses) + "\n"
+            data[782] = "classes=" + str(numberOfClasses) + "\n"
+            data[602] = "filters=" + str(filters) + "\n"
+            data[688] = "filters=" + str(filters) + "\n"
+            data[775] = "filters=" + str(filters) + "\n"
+
+            # and write everything back
+            with open(self.newModelConfigPath, 'w') as file:
+                file.writelines(data)
+            
+            # preparing trainedOn.txt
+            trainedOnPath = os.path.join(self.detector_path, "trainedOn.txt")
+            with open(trainedOnPath, 'w') as file:
+                file.write(dsDirectory)
+    
+    def trainDetector(self):
+        # Create detector directory
+        self.detectorName = self.dlg.lineEditDetectorName.text()
+        plugin_directory = self.plugin_dir
+        self.detector_path = os.path.join(plugin_directory, "workspace", "detectors", self.detectorName)
+        self.weights_folder = os.path.join(self.detector_path, "weights")
+        
+        # Perform checks
+        if self.detectorName == "":
+            self.dlg.error_dialog = QErrorMessage()
+            self.dlg.error_dialog.showMessage('Please enter detector name.')
+            return
+        elif not self.modelConfig:
+            self.dlg.error_dialog = QErrorMessage()
+            self.dlg.error_dialog.showMessage('Please select a model configuration file.')
+            return
+        elif not self.baseWeights:
+            self.dlg.error_dialog = QErrorMessage()
+            self.dlg.error_dialog.showMessage('Please select base weights.')
+            return
+        elif not self.datasetDirectory:
+            self.dlg.error_dialog = QErrorMessage()
+            self.dlg.error_dialog.showMessage('Please select a dataset.')
+            return
+        elif os.path.exists(self.detector_path): 
+            self.dlg.error_dialog = QErrorMessage()
+            self.dlg.error_dialog.showMessage('The detector already exists. Please provide a new detector name.')
+            self.dlg.lineEditDatasetName.setText("") 
+            return
+        else:
+            pathlib.Path(self.weights_folder).mkdir(0o755, parents=True, exist_ok=True) 
+            
+        # Prep the ".data" file
+        self.prepare_data_file()
+        
+        # Prep the ".cfg" file
+        self.prepare_config_file()
+
+        
+        #darknetFunc.train_detector(str(self.dsDataFilePath).encode('utf8'), str(self.newModelConfigPath).encode('utf8'), str(self.baseWeights).encode('utf8'))
+
+# Training Tab
+################################################################################################
+# Detection Tab
+
+    def select_detector_directory(self):
+        if not os.path.exists(os.path.join(self.plugin_dir, "workspace", "detectors")):
+            self.dlg.error_dialog = QErrorMessage()
+            self.dlg.error_dialog.showMessage('Please create a detector first.')
+            return
+        
+        filename = QFileDialog.getExistingDirectory(self.dlg, "Select a detector directory.", str(os.path.join(self.plugin_dir, "workspace", "detectors")))
+        self.detectorDirectory = filename
+        self.dlg.lineEditDetectionD.setText(filename)
+        
+        self.get_necessary_files()
+        
+        self.dlg.cfgFilePath.setText(self.cfgfilePath)
+        self.dlg.datacfgPath.setText(self.datacfgPath)
+        
+    def select_detection_image(self):
+        filename, _ = QFileDialog.getOpenFileName(self.dlg, "Select an image for detection.", str(os.path.join(self.plugin_dir, "workspace")), '*.jpg')
+        self.detectionImage = filename
+        self.dlg.lineEditDetectionI.setText(filename)
+
+    def select_weights_file(self):
+        if not (self.detectorDirectory):
+            self.dlg.error_dialog = QErrorMessage()
+            self.dlg.error_dialog.showMessage('Please select a detector first.')
+            return
+        filename, _ = QFileDialog.getOpenFileName(self.dlg, "Select weights.", str(os.path.join(self.detectorDirectory, "weights")), '*.weights')
+        self.weightsfilePath = filename
+        self.dlg.lineEditDetectionW.setText(filename)
+
+    def get_necessary_files(self):
+        # Get datacfg
+        trainedOnPath = os.path.join(self.detectorDirectory, "trainedOn.txt")
+        with open(trainedOnPath, 'r') as file:
+                # read a list of lines into data
+                data = file.readlines()
+        
+        self.datacfgPath = data[0]
+        data.clear()
+        
+        # Get cfgfile
+        self.cfgfilePath = os.path.join(self.detectorDirectory, os.path.basename(self.detectorDirectory)+".cfg")
+        
+    def detect_objects(self):
+        darknetFunc.test_detector(str(self.datacfgPath).encode('utf8'), str(self.cfgfilePath).encode('utf8'), str(self.weightsfilePath).encode('utf8'), str(self.detectionImage).encode('utf8'))
+    
+# Detection Tab
+################################################################################################
+
     def run(self):
         """Run method that performs all the real work"""
 
@@ -437,6 +615,9 @@ class ObjectDetection:
             self.dlg = ObjectDetectionDialog()
             self.dlg.setWindowFlags(Qt.WindowShadeButtonHint)
             self.filename = ""
+            self.modelConfig = ""
+            self.baseWeights = ""
+            self.datasetDirectory = ""
         else: 
             self.dlg.lineEditInputImage.setText("")
             self.dlg.lineEditDatasetName.setText("") 
@@ -451,6 +632,9 @@ class ObjectDetection:
         self.display_slider_value()
         self.dlg.show()
            
+        ################################################################################################
+        # Dataset Creation Tab
+        
         self.dlg.toolButtonData.clicked.connect(self.select_training_image)
         self.dlg.pushButtonCreateClippings.clicked.connect(self.clip_image)
         self.dlg.pushButtonAnnotate.clicked.connect(self.open_annotation_dialog)
@@ -461,10 +645,28 @@ class ObjectDetection:
         self.dlg.pushButtonAnnotate.setEnabled(False)
         self.dlg.pushButtonPreparation.setEnabled(False)
         
+        # Dataset Creation Tab
+        ################################################################################################
+        # Training Tab
         
+        self.dlg.pushButtonTrain.clicked.connect(self.trainDetector)
+        self.dlg.toolButtonModelConfig.clicked.connect(self.select_model_config)
+        self.dlg.toolButtonBaseWeights.clicked.connect(self.select_base_weights)
+        self.dlg.toolButtonDataset.clicked.connect(self.select_dataset_directory)
+        
+        # Training Tab 
+        ################################################################################################
+        # Detection Tab
+        
+        self.dlg.toolButtonDetectionD.clicked.connect(self.select_detector_directory)
+        self.dlg.toolButtonDetectionI.clicked.connect(self.select_detection_image)
+        self.dlg.toolButtonDetectionW.clicked.connect(self.select_weights_file)
+        self.dlg.pushButtonDetect.clicked.connect(self.detect_objects)
+        
+        # Detection Tab 
+        ################################################################################################   
             
-            
-    
+        
         
         
         
